@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -15,19 +16,22 @@ export default function Signup() {
   const router = useRouter();
 
   const [name, setName] = useState("");
-  const [course, setCourse] = useState("");
-  const [year, setYear] = useState("");
+  const [courseYear, setCourseYear] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSignup = async () => {
-    if (!name || !course || !year || !email || !password || !confirmPassword) {
+    console.log("🟡 Attempting signup...");
+
+    if (!name || !courseYear || !email || !password || !confirmPassword) {
+      console.log("❌ Missing fields");
       Alert.alert("⚠️ Missing Fields", "Please fill all fields.");
       return;
     }
 
     if (password !== confirmPassword) {
+      console.log("❌ Password mismatch");
       Alert.alert("⚠️ Password Error", "Passwords do not match.");
       return;
     }
@@ -37,25 +41,29 @@ export default function Signup() {
       const existingUser = await AsyncStorage.getItem(`user_${trimmedEmail}`);
 
       if (existingUser !== null) {
+        console.log("❌ User already exists");
         Alert.alert("⚠️ Account Exists", "User already exists. Please log in.");
         return;
       }
 
       const userData = {
         name,
-        course,
-        year,
+        courseYear,
         email: trimmedEmail,
         password,
-        profilePic: "https://randomuser.me/api/portraits/women/44.jpg", // default avatar
+        profilePic: "https://randomuser.me/api/portraits/women/44.jpg",
       };
 
       await AsyncStorage.setItem(`user_${trimmedEmail}`, JSON.stringify(userData));
+      console.log("✅ Signup successful. Navigating to login...");
 
-      Alert.alert("Success", "Signup successful! Please login.");
-      router.replace("/login");
+      Alert.alert("✅ Success", "Signup successful! Please login.");
+
+      // ✅ Use push instead of replace to support web better
+      router.push("/login");
+
     } catch (error) {
-      console.error(error);
+      console.error("❌ Signup error:", error);
       Alert.alert("Error", "Something went wrong. Please try again.");
     }
   };
@@ -78,17 +86,9 @@ export default function Signup() {
 
       <TextInput
         style={styles.input}
-        placeholder="Course (e.g. BSIT)"
-        value={course}
-        onChangeText={setCourse}
-        placeholderTextColor="#ccc"
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Year Level (e.g. 3rd Year)"
-        value={year}
-        onChangeText={setYear}
+        placeholder="Course & Year (e.g. BSIT - 3rd Year)"
+        value={courseYear}
+        onChangeText={setCourseYear}
         placeholderTextColor="#ccc"
       />
 
@@ -124,7 +124,6 @@ export default function Signup() {
         <Text style={styles.buttonText}>Sign Up</Text>
       </Pressable>
 
-      {/* 👇 Only "Login" is underlined */}
       <View style={styles.loginContainer}>
         <Text style={styles.loginText}>Already have an account? </Text>
         <TouchableOpacity onPress={goToLogin}>
@@ -136,19 +135,18 @@ export default function Signup() {
 }
 
 const styles = StyleSheet.create({
- container: {
-  flex: 1,
-  backgroundColor: "#BC8F8F", // Rosy Brown
-  alignItems: "center",
-  justifyContent: "center",
-  padding: 20,
+  container: {
+    flex: 1,
+    backgroundColor: "#BC8F8F",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     color: "#0a0a0aff",
     marginBottom: 20,
-    fontFamily: "Caecilia",
   },
   input: {
     width: 260,
@@ -160,7 +158,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginBottom: 16,
     color: "#000",
-    fontFamily: "Arial",
   },
   button: {
     backgroundColor: "#605f61ff",
@@ -176,7 +173,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   buttonText: {
-    color: "#ffffffff",
+    color: "#ffffff",
     fontSize: 18,
     fontWeight: "600",
     fontFamily: "Caecilia",

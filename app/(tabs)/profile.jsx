@@ -32,12 +32,11 @@ export default function Profile() {
 
           setStudent({
             name: parsedUser.name || "Student",
-            course: parsedUser.course || "BSIT",
-            year: parsedUser.year || "3rd Year",
+            courseYear: parsedUser.courseYear || "BSIT - 3rd Year", // ✅ Combined field
             email: parsedUser.email || loggedInEmail,
             profilePic:
               parsedUser.profilePic ||
-              "https://randomuser.me/api/portraits/women/68.jpg", // Updated profile picture here
+              "https://randomuser.me/api/portraits/women/68.jpg",
           });
         }
       } catch (error) {
@@ -73,13 +72,8 @@ export default function Profile() {
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.label}>Course</Text>
-        <Text style={styles.value}>{student.course}</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>Year Level</Text>
-        <Text style={styles.value}>{student.year}</Text>
+        <Text style={styles.label}>Course & Year</Text> {/* ✅ Updated label */}
+        <Text style={styles.value}>{student.courseYear}</Text> {/* ✅ Combined value */}
       </View>
 
       <View style={styles.card}>
@@ -99,7 +93,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#BC8F8F",
     padding: 20,
-    paddingBottom: 40, // extra space for logout button at bottom
+    paddingBottom: 40,
   },
   profilePic: {
     width: 120,
@@ -110,7 +104,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     backgroundColor: "#fff",
   },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 30, color: "#111111ff" },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 30,
+    color: "#111111ff",
+  },
   card: {
     backgroundColor: "#ebb6e1ff",
     padding: 16,
@@ -122,8 +121,15 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  label: { fontSize: 14, color: "#4e4c4cff" },
-  value: { fontSize: 18, fontWeight: "600", color: "#333" },
+  label: {
+    fontSize: 14,
+    color: "#4e4c4cff",
+  },
+  value: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#333",
+  },
   logoutButton: {
     marginTop: 40,
     backgroundColor: "#976455ff",

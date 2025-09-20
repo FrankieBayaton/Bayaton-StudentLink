@@ -20,8 +20,9 @@ const Login = () => {
     const checkLogin = async () => {
       try {
         const loggedInUser = await AsyncStorage.getItem("loggedInUser");
+        console.log("Logged in user from storage:", loggedInUser);
         if (loggedInUser) {
-          router.replace("/login");
+          router.replace("login");
         }
       } catch (e) {
         console.error("Login check failed", e);
@@ -34,7 +35,7 @@ const Login = () => {
   const handleLogin = async () => {
     setError("");
 
-    if (!email || !password) {
+    if (!email.trim() || !password.trim()) {
       setError("Please fill all fields");
       Alert.alert("⚠️ Please fill all fields");
       return;
@@ -42,15 +43,18 @@ const Login = () => {
 
     try {
       const trimmedEmail = email.trim().toLowerCase();
-      const existingUser = await AsyncStorage.getItem(`user_${trimmedEmail}`);
+      console.log("Trying to login with email:", trimmedEmail);
 
-      if (!existingUser) {
+      const existingUserJson = await AsyncStorage.getItem(`user_${trimmedEmail}`);
+
+      if (!existingUserJson) {
         setError("User does not exist. Please sign up.");
         Alert.alert("User does not exist", "Please sign up first.");
         return;
       }
 
-      const user = JSON.parse(existingUser);
+      const user = JSON.parse(existingUserJson);
+      console.log("Fetched user data:", user);
 
       if (user.password !== password) {
         setError("Your Password is Incorrect");
@@ -59,12 +63,14 @@ const Login = () => {
       }
 
       await AsyncStorage.setItem("loggedInUser", trimmedEmail);
+      console.log("Login success. Navigating to /read");
+
       setEmail("");
       setPassword("");
       setError("");
       router.replace("/read");
     } catch (e) {
-      console.error(e);
+      console.error("Login error:", e);
       setError("Something went wrong. Please try again.");
       Alert.alert("Error", "Something went wrong. Please try again.");
     }
@@ -118,13 +124,12 @@ const Login = () => {
 export default Login;
 
 const styles = StyleSheet.create({
- container: {
-  flex: 1,
-  backgroundColor: "#BC8F8F", // Rosy Brown
-  alignItems: "center",
-  justifyContent: "center",
-  padding: 20,
-
+  container: {
+    flex: 1,
+    backgroundColor: "#BC8F8F",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
   },
   title: {
     fontSize: 32,
